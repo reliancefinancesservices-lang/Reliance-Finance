@@ -4,176 +4,313 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reliance Finance - Official Loan Management Portal</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-letter, #printable-letter *, #printable-noc, #printable-noc *, #printable-home-calculator, #printable-home-calculator * { visibility: visible; }
+            #printable-letter, #printable-noc, #printable-home-calculator { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; border: none; }
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-gray-50 text-gray-800 font-sans flex flex-col min-h-screen">
 
-    <!-- Header -->
-    <header class="bg-blue-900 text-white shadow-md">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i class="fa-solid fa-building-columns text-2xl text-blue-400"></i>
-                <span class="text-xl font-bold tracking-wide">Reliance Finance Portal</span>
+    <!-- Navbar -->
+    <nav class="bg-blue-950 text-white shadow-lg sticky top-0 z-50 border-b border-blue-900">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchPage('home')">
+                <div class="bg-gradient-to-tr from-yellow-500 to-yellow-300 text-blue-950 p-2 rounded-lg font-black shadow">
+                    <i class="fa-solid fa-building-columns text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold tracking-wide block leading-tight">RELIANCE FINANCE</span>
+                    <span class="text-[10px] text-yellow-400 font-semibold tracking-widest uppercase block">An RBI Registered NBFC</span>
+                </div>
             </div>
-            <nav class="space-x-4">
-                <button onclick="switchPage('home')" class="hover:text-blue-300 font-medium transition"><i class="fa-solid fa-house mr-1"></i> Home</button>
-                <button onclick="switchPage('requests')" class="hover:text-blue-300 font-medium transition"><i class="fa-solid fa-list-check mr-1"></i> My Requests</button>
-            </nav>
+            <div class="hidden md:flex space-x-6 items-center text-sm font-medium">
+                <button onclick="switchPage('home')" class="hover:text-yellow-300 transition">Home</button>
+                <button onclick="switchPage('types')" class="hover:text-yellow-300 transition">Loan Products</button>
+                <button onclick="switchPage('calculator')" class="hover:text-yellow-300 transition">EMI Calculator</button>
+                <button onclick="switchPage('apply')" class="hover:text-yellow-300 transition">Apply Loan</button>
+                <button onclick="switchPage('status')" class="hover:text-yellow-300 transition">Track Status</button>
+                <button onclick="switchPage('portal')" class="hover:text-yellow-300 transition">Customer Portal</button>
+                <button onclick="switchPage('admin')" class="bg-yellow-500 text-blue-950 px-4 py-2 rounded font-bold hover:bg-yellow-400 transition shadow">Admin Login</button>
+            </div>
         </div>
-    </header>
+    </nav>
 
     <!-- Main Container -->
-    <main class="container mx-auto px-4 py-8 flex-grow">
-        
-        <!-- Home / Payment Request Form Page -->
-        <div id="homePage" class="page-section max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-100">
-            <h2 class="text-2xl font-bold text-blue-900 mb-6 border-b pb-3">Customer Payment Request Form</h2>
-            
-            <form id="paymentForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Customer Full Name</label>
-                    <input type="text" id="custName" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter full name">
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Loan Account Number</label>
-                    <input type="text" id="loanAcc" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. RL-98765432">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1">Payment Amount (₹)</label>
-                        <input type="number" id="payAmount" required class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g. 15000">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-600 mb-1">Payment Mode</label>
-                        <select id="payMode" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="UPI">UPI / QR</option>
-                            <option value="Net Banking">Net Banking</option>
-                            <option value="Debit Card">Debit Card</option>
-                            <option value="Bank Transfer (NEFT/RTGS)">NEFT / RTGS</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Remarks / Note</label>
-                    <textarea id="payRemarks" rows="3" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Optional notes..."></textarea>
-                </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-md">
-                    <i class="fa-solid fa-paper-plane mr-2"></i> Submit Payment Request
-                </button>
-            </form>
-        </div>
+    <main class="flex-grow">
 
-        <!-- My Requests Page -->
-        <div id="requestsPage" class="page-section hidden max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-slate-100">
-            <div class="flex justify-between items-center mb-6 border-b pb-3">
-                <h2 class="text-2xl font-bold text-blue-900">Submitted Payment Requests</h2>
-                <button onclick="clearAllRequests()" class="text-sm bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg font-medium transition">
-                    <i class="fa-solid fa-trash mr-1"></i> Clear History
-                </button>
+        <!-- 1. HOME PAGE -->
+        <section id="page-home" class="page-section active">
+            <div class="bg-blue-900 text-white py-20 px-6 text-center">
+                <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Fast & Reliable Loans for Your Dreams</h1>
+                <p class="text-lg text-blue-200 mb-8 max-w-2xl mx-auto">Get instant approval with minimal documentation and flexible EMI options from Reliance Finance.</p>
+                <button onclick="switchPage('apply')" class="bg-yellow-500 text-blue-950 font-bold px-8 py-3 rounded-lg shadow-lg hover:bg-yellow-400 transition">Apply Now</button>
             </div>
-            
-            <div id="requestsContainer" class="space-y-4">
-                <!-- JavaScript will inject requests here dynamically -->
+            <div class="container mx-auto px-6 py-16 grid md:grid-cols-3 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow border border-gray-100 text-center">
+                    <div class="text-blue-900 text-3xl mb-4"><i class="fa-solid fa-bolt"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Instant Approval</h3>
+                    <p class="text-gray-600 text-sm">Our automated system verifies and approves loans within minutes.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow border border-gray-100 text-center">
+                    <div class="text-blue-900 text-3xl mb-4"><i class="fa-solid fa-percent"></i></div>
+                    <h3 class="text-xl font-bold mb-2">Low Interest Rates</h3>
+                    <p class="text-gray-600 text-sm">Enjoy competitive interest rates starting at just 8.5% per annum.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow border border-gray-100 text-center">
+                    <div class="text-blue-900 text-3xl mb-4"><i class="fa-solid fa-shield-halved"></i></div>
+                    <h3 class="text-xl font-bold mb-2">100% Secure</h3>
+                    <p class="text-gray-600 text-sm">RBI registered NBFC ensuring complete transparency and data security.</p>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- 2. LOAN PRODUCTS -->
+        <section id="page-types" class="page-section container mx-auto px-6 py-12">
+            <h2 class="text-3xl font-bold mb-6 text-blue-950">Our Loan Products</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="bg-white border rounded-xl p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Personal Loan</h3>
+                    <p class="text-gray-600 text-sm mb-4">Unsecured personal loan for weddings, travel, or medical emergencies.</p>
+                    <button onclick="switchPage('apply')" class="text-blue-900 font-bold text-sm hover:underline">Apply for Personal Loan &rarr;</button>
+                </div>
+                <div class="bg-white border rounded-xl p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Home Loan</h3>
+                    <p class="text-gray-600 text-sm mb-4">Make your dream home a reality with low EMIs and long tenure.</p>
+                    <button onclick="switchPage('apply')" class="text-blue-900 font-bold text-sm hover:underline">Apply for Home Loan &rarr;</button>
+                </div>
+                <div class="bg-white border rounded-xl p-6 shadow-sm">
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Business Loan</h3>
+                    <p class="text-gray-600 text-sm mb-4">Expand your business operations with quick capital funding.</p>
+                    <button onclick="switchPage('apply')" class="text-blue-900 font-bold text-sm hover:underline">Apply for Business Loan &rarr;</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. EMI CALCULATOR -->
+        <section id="page-calculator" class="page-section container mx-auto px-6 py-12 max-w-2xl">
+            <h2 class="text-3xl font-bold mb-6 text-blue-950">EMI Calculator</h2>
+            <div class="bg-white p-6 rounded-xl shadow border">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-1">Loan Amount (₹)</label>
+                    <input type="number" id="calc-amount" value="500000" class="w-full border p-2 rounded">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold mb-1">Interest Rate (% P.A.)</label>
+                    <input type="number" id="calc-rate" value="10.5" step="0.1" class="w-full border p-2 rounded">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-1">Tenure (Months)</label>
+                    <input type="number" id="calc-tenure" value="12" class="w-full border p-2 rounded">
+                </div>
+                <button onclick="calculateEMI()" class="w-full bg-blue-900 text-white font-bold py-2 rounded hover:bg-blue-800 transition">Calculate EMI</button>
+                <div id="calc-result" class="mt-6 p-4 bg-blue-50 rounded text-center hidden">
+                    <p class="text-sm text-gray-600">Monthly EMI:</p>
+                    <p id="emi-amount" class="text-2xl font-bold text-blue-950">₹0</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. APPLY LOAN -->
+        <section id="page-apply" class="page-section container mx-auto px-6 py-12 max-w-2xl">
+            <h2 class="text-3xl font-bold mb-6 text-blue-950">Apply for a Loan</h2>
+            <form id="loan-form" onsubmit="handleLoanSubmit(event)" class="bg-white p-6 rounded-xl shadow border space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Full Name</label>
+                    <input type="text" id="app-name" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Phone Number</label>
+                    <input type="tel" id="app-phone" required class="w-full border p-2 rounded">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Loan Type</label>
+                    <select id="app-type" class="w-full border p-2 rounded">
+                        <option value="Personal Loan">Personal Loan</option>
+                        <option value="Home Loan">Home Loan</option>
+                        <option value="Business Loan">Business Loan</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Required Amount (₹)</label>
+                    <input type="number" id="app-amount" required class="w-full border p-2 rounded">
+                </div>
+                <button type="submit" class="w-full bg-yellow-500 text-blue-950 font-bold py-2 rounded hover:bg-yellow-400 transition">Submit Application</button>
+            </form>
+        </section>
+
+        <!-- 5. TRACK STATUS -->
+        <section id="page-status" class="page-section container mx-auto px-6 py-12 max-w-xl">
+            <h2 class="text-3xl font-bold mb-6 text-blue-950">Track Loan Status</h2>
+            <div class="bg-white p-6 rounded-xl shadow border space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold mb-1">Enter Application ID or Phone Number</label>
+                    <input type="text" id="track-query" class="w-full border p-2 rounded" placeholder="e.g. RF12345">
+                </div>
+                <button onclick="trackStatus()" class="w-full bg-blue-900 text-white font-bold py-2 rounded hover:bg-blue-800 transition">Track Status</button>
+                <div id="track-result" class="mt-4 p-4 bg-gray-50 rounded border hidden"></div>
+            </div>
+        </section>
+
+        <!-- 6. CUSTOMER PORTAL -->
+        <section id="page-portal" class="page-section container mx-auto px-6 py-12 max-w-xl">
+            <h2 class="text-3xl font-bold mb-6 text-blue-950">Customer Portal</h2>
+            <div class="bg-white p-6 rounded-xl shadow border">
+                <p class="text-gray-600 text-sm mb-4">Login using your registered mobile number to manage active loans.</p>
+                <input type="tel" id="portal-phone" placeholder="Mobile Number" class="w-full border p-2 rounded mb-4">
+                <button onclick="loginPortal()" class="w-full bg-blue-900 text-white font-bold py-2 rounded hover:bg-blue-800 transition">Login</button>
+            </div>
+        </section>
+
+        <!-- 7. ADMIN PANEL -->
+        <section id="page-admin" class="page-section container mx-auto px-6 py-12 max-w-4xl">
+            <h2 class="text-3xl font-bold mb-6 text-blue-950">Admin Dashboard</h2>
+            <div id="admin-login-box" class="bg-white p-6 rounded-xl shadow border max-w-md mx-auto">
+                <input type="password" id="admin-pass" placeholder="Admin Password" class="w-full border p-2 rounded mb-4">
+                <button onclick="adminLogin()" class="w-full bg-yellow-500 text-blue-950 font-bold py-2 rounded">Login as Admin</button>
+            </div>
+            <div id="admin-dashboard-box" class="hidden">
+                <div class="bg-white p-6 rounded-xl shadow border overflow-x-auto">
+                    <h3 class="font-bold text-lg mb-4">All Loan Applications</h3>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="border-b bg-gray-100 text-sm">
+                                <th class="p-2">ID</th>
+                                <th class="p-2">Name</th>
+                                <th class="p-2">Type</th>
+                                <th class="p-2">Amount</th>
+                                <th class="p-2">Status</th>
+                                <th class="p-2">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="text-sm">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-800 text-slate-400 py-4 text-center text-sm">
-        <p>&copy; 2026 Reliance Finance. All rights reserved. Secured GitHub Pages Deployment.</p>
+    <footer class="bg-blue-950 text-white text-center py-6 mt-auto border-t border-blue-900 text-sm">
+        <p>&copy; 2026 Reliance Finance. All rights reserved. RBI Registered NBFC.</p>
     </footer>
 
-    <!-- JavaScript Logic with LocalStorage Support -->
+    <!-- Safe Storage & App Script -->
     <script>
+        const storage = {
+            getItem: function(key) {
+                try { return localStorage.getItem(key); } catch (e) { return null; }
+            },
+            setItem: function(key, value) {
+                try { localStorage.setItem(key, value); } catch (e) {}
+            }
+        };
+
         function switchPage(pageId) {
-            document.getElementById('homePage').classList.add('hidden');
-            document.getElementById('requestsPage').classList.add('hidden');
-
-            if (pageId === 'home') {
-                document.getElementById('homePage').classList.remove('hidden');
-            } else if (pageId === 'requests') {
-                document.getElementById('requestsPage').classList.remove('hidden');
-                loadRequests();
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            const target = document.getElementById('page-' + pageId);
+            if (target) {
+                target.classList.add('active');
+                window.scrollTo(0, 0);
             }
         }
 
-        function handleFormSubmit(event) {
-            event.preventDefault();
+        function calculateEMI() {
+            let p = parseFloat(document.getElementById('calc-amount').value);
+            let r = parseFloat(document.getElementById('calc-rate').value) / 12 / 100;
+            let n = parseInt(document.getElementById('calc-tenure').value);
+            if(isNaN(p) || isNaN(r) || isNaN(n)) return;
+            let emi = (p * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
+            document.getElementById('emi-amount').innerText = '₹' + Math.round(emi).toLocaleString('en-IN');
+            document.getElementById('calc-result').classList.remove('hidden');
+        }
 
-            const name = document.getElementById('custName').value;
-            const account = document.getElementById('loanAcc').value;
-            const amount = document.getElementById('payAmount').value;
-            const mode = document.getElementById('payMode').value;
-            const remarks = document.getElementById('payRemarks').value;
-
-            const newRequest = {
-                id: 'REQ-' + Math.floor(100000 + Math.random() * 900000),
-                date: new Date().toLocaleString(),
-                name,
-                account,
-                amount,
-                mode,
-                remarks,
-                status: 'Pending Verification'
+        function handleLoanSubmit(e) {
+            e.preventDefault();
+            let applications = JSON.parse(storage.getItem('rf_applications') || '[]');
+            let newApp = {
+                id: 'RF' + Math.floor(10000 + Math.random() * 90000),
+                name: document.getElementById('app-name').value,
+                phone: document.getElementById('app-phone').value,
+                type: document.getElementById('app-type').value,
+                amount: document.getElementById('app-amount').value,
+                status: 'Pending'
             };
-
-            let requests = JSON.parse(localStorage.getItem('loan_requests')) || [];
-            requests.unshift(newRequest);
-            localStorage.setItem('loan_requests', JSON.stringify(requests));
-
-            alert('Payment Request Submitted Successfully!');
-            document.getElementById('paymentForm').reset();
-            switchPage('requests');
+            applications.push(newApp);
+            storage.setItem('rf_applications', JSON.stringify(applications));
+            alert('Loan application submitted successfully! Your Application ID is: ' + newApp.id);
+            document.getElementById('loan-form').reset();
+            switchPage('status');
         }
 
-        function loadRequests() {
-            const container = document.getElementById('requestsContainer');
-            let requests = JSON.parse(localStorage.getItem('loan_requests')) || [];
-
-            if (requests.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-10 text-slate-400">
-                        <i class="fa-solid fa-folder-open text-4xl mb-2"></i>
-                        <p>No payment requests found yet.</p>
-                    </div>`;
-                return;
+        function trackStatus() {
+            let query = document.getElementById('track-query').value.trim();
+            let applications = JSON.parse(storage.getItem('rf_applications') || '[]');
+            let resultDiv = document.getElementById('track-result');
+            let found = applications.find(a => a.id === query || a.phone === query);
+            
+            resultDiv.classList.remove('hidden');
+            if(found) {
+                resultDiv.innerHTML = `<p><strong>ID:</strong> ${found.id}</p><p><strong>Name:</strong> ${found.name}</p><p><strong>Type:</strong> ${found.type}</p><p><strong>Amount:</strong> ₹${found.amount}</p><p><strong>Status:</strong> <span class="text-blue-600 font-bold">${found.status}</span></p>`;
+            } else {
+                resultDiv.innerHTML = `<p class="text-red-600">No application found matching your query.</p>`;
             }
+        }
 
-            let html = '';
-            requests.forEach(req => {
-                html += `
-                    <div class="border border-slate-200 rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center bg-slate-50 gap-4">
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <span class="font-bold text-blue-900">${req.id}</span>
-                                <span class="bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full font-semibold">${req.status}</span>
-                            </div>
-                            <h4 class="font-semibold text-slate-700 mt-1">${req.name} <span class="text-xs text-slate-500 font-normal">(Acc: ${req.account})</span></h4>
-                            <p class="text-sm text-slate-600 mt-1">Mode: <span class="font-medium">${req.mode}</span> | Remarks: ${req.remarks || 'None'}</p>
-                            <span class="text-xs text-slate-400 block mt-1"><i class="fa-regular fa-clock mr-1"></i>${req.date}</span>
-                        </div>
-                        <div class="text-right w-full md:w-auto">
-                            <span class="text-lg font-bold text-emerald-600 block">₹${Number(req.amount).toLocaleString('en-IN')}</span>
-                        </div>
-                    </div>
+        function adminLogin() {
+            let pass = document.getElementById('admin-pass').value;
+            if(pass === 'admin123') {
+                document.getElementById('admin-login-box').classList.add('hidden');
+                document.getElementById('admin-dashboard-box').classList.remove('hidden');
+                loadAdminTable();
+            } else {
+                alert('Incorrect Password!');
+            }
+        }
+
+        function loadAdminTable() {
+            let applications = JSON.parse(storage.getItem('rf_applications') || '[]');
+            let tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+            applications.forEach((app, index) => {
+                tbody.innerHTML += `
+                    <tr class="border-b">
+                        <td class="p-2">${app.id}</td>
+                        <td class="p-2">${app.name}</td>
+                        <td class="p-2">${app.type}</td>
+                        <td class="p-2">₹${app.amount}</td>
+                        <td class="p-2 font-bold">${app.status}</td>
+                        <td class="p-2 space-x-2">
+                            <button onclick="updateStatus(${index}, 'Approved')" class="bg-green-500 text-white px-2 py-1 rounded text-xs">Approve</button>
+                            <button onclick="updateStatus(${index}, 'Rejected')" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Reject</button>
+                        </td>
+                    </tr>
                 `;
             });
-
-            container.innerHTML = html;
         }
 
-        function clearAllRequests() {
-            if (confirm('Are you sure you want to clear all saved payment requests?')) {
-                localStorage.removeItem('loan_requests');
-                loadRequests();
-            }
+        function updateStatus(index, status) {
+            let applications = JSON.parse(storage.getItem('rf_applications') || '[]');
+            applications[index].status = status;
+            storage.setItem('rf_applications', JSON.stringify(applications));
+            loadAdminTable();
+        }
+
+        function loginPortal() {
+            alert('Portal login feature activated for mobile verification.');
         }
     </script>
 </body>
