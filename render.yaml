@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: reliance-finance-api
-    runtime: node
-    plan: free
-    rootDir: backend
-    buildCommand: npm install
-    startCommand: npm start
-    healthCheckPath: /api/health
